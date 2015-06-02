@@ -1,0 +1,51 @@
+[user]
+  name = jansz "Winston Jansz"
+  email = jansz@illinois.edu
+[color]
+  ui = true
+  branch = auto
+  diff = auto
+  status = auto
+[core]
+  editor = vim
+	excludesfile = ~/.cvsignore
+[alias]
+  ci = commit
+  co = checkout
+  st = status
+  br = branch
+  last3 = log -3 HEAD
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  type = cat-file -t
+  dump = cat-file -p
+  unstage = reset HEAD --
+  gmt = mergetool
+  gdt = difftool
+[color]
+  interactive = auto
+[color "status"]
+  added = green bold
+  changed = yellow bold
+  untracked = red
+[color "branch"]
+  current = green bold
+  local = green
+  remote = red bold
+[color "diff"]
+  meta = blue black bold
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[diff]
+  tool = gvimdiff
+[difftool]
+  prompt = false
+[merge]
+  tool = gvimdiff
+  conflictstyle = diff3
+[mergetool]
+  prompt = false
+  keepBackup = false
+[push]
+  default = simple
