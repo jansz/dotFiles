@@ -3,10 +3,10 @@
 # PATH & other environment variables / rbenv
 #-------------------------------------------------------------
 
-export PATH=$HOME/.rbenv/bin:$PATH
+export PATH=$HOME/.rbenv/bin:$PATH                  # rbenv
 eval "$(rbenv init -)"
 
-#PATH=$PATH:$HOME/.rvm/bin                           # Add RVM, for scripting
+#PATH=$PATH:$HOME/.rvm/bin                           # Add rvm, for scripting
 PATH=$HOME/.rbenv/plugins/ruby-build/bin:$PATH
 PATH=$HOME/.rbenv/shims:$PATH                       # for binaries
 
@@ -14,18 +14,21 @@ PATH=$HOME/.rbenv/shims:$PATH                       # for binaries
 #export GEM_PATH=$HOME/.rbenv/shims
 #export GEM_HOME=$GEM_PATH
 
-export JAVA_HOME=/usr/lib/jvm/default-java
+export JAVA_HOME=/usr/lib/jvm/default-java          # point to Java JDK, rather than JRE, for IntelliJ
 PATH=$PATH:${JAVA_HOME}/bin
 
-export CLASSPATH=$CLASSPATH:/opt/apache-log4j-1.2.17/log4j-1.2.17.jar
+export CLASSPATH=$CLASSPATH:/opt/apache-log4j-1.2.17/log4j-1.2.17.jar # log4j
 PATH=$PATH:/opt/apache-log4j-1.2.17/
 
-export VIM=/usr/share/vim/vim74
+PATH=/opt/idea/bin:$PATH                            # IntelliJ
+
+export VIM=/usr/share/vim/vim74                     # Vim
 #export VIMRUNTIME=...
 
-PATH=/usr/bin/ctags-exuberant:$PATH
-PATH=$PATH:/usr/bin/nodejs                          # add node.js
-
+PATH=/usr/bin/ctags-exuberant:$PATH                 # ctags...
+PATH=$PATH:/usr/bin/nodejs                          # node.js
+PATH=/usr/local/Qt-5.4.2/bin/:$PATH                 # Qt (Qt5)
+# And, finally, export! After adding ~/bin & ~/scripts.
 export PATH=$PATH:$HOME/bin:$HOME/scripts
 
 #-------------------------------------------------------------
@@ -33,7 +36,7 @@ export PATH=$PATH:$HOME/bin:$HOME/scripts
 #-------------------------------------------------------------
 
 stty -ixon                                          # ignore suspend (CTRL-s) / resume (CTRL-q)
-#set -o noclobber
+set -o noclobber
 set -o vi                                           # use vi to edit cmnd line
 
 export EDITOR=vim
@@ -46,9 +49,9 @@ alias difg='gvim -d'
 # Dirs
 #-------------------------------------------------------------
 
-alias cdd='cd $HOME/dev/sead'
-export SEAD_MEDICI_ROOT=$HOME/dev/sead/medici-play
-alias cdm='cd $SEAD_MEDICI_ROOT'
+alias cds='cd $HOME/dev_isda/sead'
+export CLOWDER_ROOT=$HOME/dev_isda/sead/clowder
+alias cdc='cd $CLOWDER_ROOT'
 
 #-------------------------------------------------------------
 # Aliases/Fns - Git
@@ -77,20 +80,33 @@ alias gib='git branch -a'                           # 'GI't 'B'ranch
 alias gibl='git branch | grep -v remote'            # <gib> on 'L'ocal repo
 alias gibr='git branch -r'                          # <gib> on 'R'emote repo
 
-alias gidh='git diff HEAD'                          # 'GI't 'D'iff: current cf 'H'ead
-alias gidhp='git diff HEAD^ HEAD'                   # 'GI't 'D'iff: 'H'ead cf 'P'revious-to-head
+alias gdus.h='git diff HEAD'         # `Git `Diff   `Unstaged OR `Staged   cf`.   `Head              [Unstaged|<      ...]
+alias gdu.sh='git diff'              # `Git `Diff   `Unstaged              cf`.   `Staged OR HEAD    [...        Staged|<]
+alias gds.h='git diff --cached'      # `Git `Diff   `Staged                cf`.   `Head              ["Cached" === Staged]
+alias gdh.p='git diff HEAD^ HEAD'    # `Git `Diff   `HEAD                  cf`.   `Previous Head
+# Below: Same as above, but with 'git difftool' (rather than 'git diff')
+alias gtus.h='git difftool HEAD 2>/dev/null'
+alias gtu.sh='git difftool 2>/dev/null'
+alias gts.h='git difftool --cached 2>/dev/null'
+alias gth.p='git difftool HEAD^ HEAD 2>/dev/null'
 
-gic() { # arg_1 --> name[.git] (eg: medici-play.git)
-  git clone https://opensource.ncsa.illinois.edu/stash/scm/mmdb/${1}
+gic() { # arg_1 --> name[.git] (eg: clowder.git)
+  git clone https://jansz@opensource.ncsa.illinois.edu/stash/scm/cats/${1}
 }
 
-alias gion1='git rebase --onto'                     # 'GI't rebase 'ON'to - step '1' (of 2)
+gigb() {
+  /usr/lib/git-core/git-gui blame $* 2>/dev/null &
+}
 
-# To override user.name/.email set in .gitconfig (since $USER is 'wnj'):
-export GIT_AUTHOR_NAME='Winston Jansz'
-export GIT_COMMITTER_NAME='Winston Jansz'
-export GIT_AUTHOR_EMAIL='jansz@illinois.edu'
-export GIT_COMMITTER_EMAIL='jansz@illinois.edu'
+komp() {
+  kompare $* 2>/dev/null &
+}
+
+## To override user.name/.email set in .gitconfig
+#export GIT_AUTHOR_NAME='Winston Jansz'
+#export GIT_COMMITTER_NAME='Winston Jansz'
+#export GIT_AUTHOR_EMAIL='jansz@illinois.edu'
+#export GIT_COMMITTER_EMAIL='jansz@illinois.edu'
 
 #-------------------------------------------------------------
 # Aliases/Fns - Others
@@ -120,6 +136,8 @@ alias diff='colordiff'
 didi() {
   dirdiff $1 $2 &
 }
+
+alias difs='diff -bWiEZ -w350 --diff-program=colordiff'
 
 alias grep='grep --color=auto'
 # Pipe grep's output thru 'less', etc., but STILL preserve search string colorization:
@@ -155,7 +173,7 @@ alias dotfiles='ls -1d .??* | \grep "[^/]$"'
 alias dotdirs='ls -1d .??*/'
 alias thedirs='ls -1d */'
 
-alias fr='find . -type d \( -name .git -o -name doc -o -name log -o -name test -o -name tmp \) -prune -o -name'
+alias fr='find . -type d \( -name .git -o -name .idea -o -name doc -o -name log -o -name test -o -name tmp -o -name public -o -name script -o -name scripts -o -name target \) -prune -o -name'
 alias frj='find . -type d \( -name javascripts -name .git -o -name doc -o -name log -o -name test -o -name tmp \) -prune -o -name'
 alias rfr='echo "fr \"*\" | grep -v \"\./tags:\" | xargs grep -in --color=always \"WORDS\" 2>/dev/null"'
 alias rp='echo "USE SINGLE-QUOTE & CTRL-V. ---> perl -ne \"next LINE unless / Load \(|SELECT COUNT/; s/^[\[[0-9;]*[a-zA-Z]//g; s/ Load \([0-9]{1,3}\.[0-9]ms\) /:/;s/ \([0-9]{1,3}\.[0-9]ms\) /:/; print $_ \" FILE | sort"'
@@ -272,7 +290,7 @@ alias ens9ln='enscript --color --mark-wrapped-lines=arrow -rGC -DDuplex:false -E
 # Prompt
 #-------------------------------------------------------------
 
-export PS1="\[\007\033[35;22m\]\w\[\033[31;1m\] \$ \[\033[0m\]"
+export PS1='\[\e[1;33m\]\w $ \[\e[m\]'
 
 #-------------------------------------------------------------
 # Titlebar
@@ -285,7 +303,7 @@ function git-branch-name() {
 function git-branch-prompt {
   local branch=$(git-branch-name)
   if [ $branch ]; then
-    printf "[%s]   : " $branch
+    printf " [%s]     " $branch
   fi
 }
 
@@ -294,10 +312,7 @@ function tb() {
   if [[ "$HOME" == ${dir:0:${#HOME}} ]] ; then
     dir="~${dir:${#HOME}}" # use '~' if possible
   fi
-  if [[ ${dir:${#dir}-1} != "/" ]] ; then
-    dir="$dir/" # add trailing '/' if necessary
-  fi
-  echo -ne "\033]0;$(git-branch-prompt)${dir}\007"
+  echo -ne "\e]0;$(git-branch-prompt)${dir}\007"
 }
 export PROMPT_COMMAND=tb
 
