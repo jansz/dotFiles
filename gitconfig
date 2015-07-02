@@ -8,7 +8,7 @@
   status = auto
 [core]
   editor = vim
-	excludesfile = ~/.cvsignore
+  excludesfile = ~/.cvsignore
 [alias]
   ci = commit
   co = checkout
@@ -38,7 +38,7 @@
   old = red bold
   new = green bold
 [diff]
-  tool = gvimdiff
+  tool = kompare
 [difftool]
   prompt = false
 [merge]
