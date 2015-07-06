@@ -6,7 +6,7 @@
 export PATH=$HOME/.rbenv/bin:$PATH                  # rbenv
 eval "$(rbenv init -)"
 
-#PATH=$PATH:$HOME/.rvm/bin                           # Add rvm, for scripting
+PATH=$PATH:$HOME/.rvm/bin                           # Add rvm, for scripting
 PATH=$HOME/.rbenv/plugins/ruby-build/bin:$PATH
 PATH=$HOME/.rbenv/shims:$PATH                       # for binaries
 
@@ -43,7 +43,7 @@ export EDITOR=vim
 
 alias vi='/usr/bin/gvim "+colo sahara"'
 alias difg='gvim -d'
-#alias sudop='sudo su postgres'
+alias sudop='sudo su postgres'
 
 #-------------------------------------------------------------
 # Dirs
@@ -163,9 +163,9 @@ g4bh() {
 g4d() {
   grep -i $* $HOME/.{bash_logout,bashrc,bash_profile,profile,vimrc}
 }
-#g4ds() {
-#  grep -i $* $HOME/.{bash_logout,bashrc,bash_profile,profile,vimrc} $HOME/scripts/{stx,rsun}.sh
-#}
+g4ds() {
+  grep -i $* $HOME/.{bash_logout,bashrc,bash_profile,profile,vimrc} $HOME/scripts/{stx,rsun}.sh
+}
 
 alias maps="grep -A1 map $HOME/.vimrc | sed '/[>my]$/{N;s!\n!!}' | grep map | sed -r 's!^.+\" !  !; s!^  (.*) <--!$(tput setaf 2)  \1  $(tput sgr0)<--!; s!<-- (.*)!<---- $(tput setaf 6) \1$(tput sgr0)!'"
 
