@@ -1,60 +1,138 @@
 
 #-------------------------------------------------------------
-# PATH & other environment variables / rbenv
+# PATH / Other env variables
 #-------------------------------------------------------------
 
-export PATH=$HOME/.rbenv/bin:$PATH                  # rbenv
-eval "$(rbenv init -)"
-
-PATH=$PATH:$HOME/.rvm/bin                           # Add rvm, for scripting
-PATH=$HOME/.rbenv/plugins/ruby-build/bin:$PATH
-PATH=$HOME/.rbenv/shims:$PATH                       # for binaries
-
-#PATH=$HOME/.rvm/gems/ruby-1.9.3-p545/bin:$PATH      # Ruby's bin dir.
+## rbenv
+#export PATH=$HOME/.rbenv/bin:$PATH
+#eval "$(rbenv init -)"
+#PATH=$HOME/.rbenv/plugins/ruby-build/bin:$PATH
+#PATH=$HOME/.rbenv/shims:$PATH                       # for binaries
 #export GEM_PATH=$HOME/.rbenv/shims
 #export GEM_HOME=$GEM_PATH
 
+# Ruby (and RVM for version management)
+PATH=$PATH:$HOME/.rvm/bin
+PATH=$HOME/.rvm/gems/ruby-1.9.3-p545/bin:$PATH      # Ruby's bin dir.
+
+# IntelliJ (and Java, log4j)
 export JAVA_HOME=/usr/lib/jvm/default-java          # point to Java JDK, rather than JRE, for IntelliJ
 PATH=$PATH:${JAVA_HOME}/bin
-
-export CLASSPATH=$CLASSPATH:/opt/apache-log4j-1.2.17/log4j-1.2.17.jar # log4j
+export CLASSPATH=$CLASSPATH:/opt/apache-log4j-1.2.17/log4j-1.2.17.jar           # log4j
 PATH=$PATH:/opt/apache-log4j-1.2.17/
+PATH=/opt/idea/bin:$PATH                            # for IntelliJ
 
-PATH=/opt/idea/bin:$PATH                            # IntelliJ
-
-export VIM=/usr/share/vim/vim74                     # Vim
-#export VIMRUNTIME=...
-
+# Misc.
 PATH=/usr/bin/ctags-exuberant:$PATH                 # ctags...
 PATH=$PATH:/usr/bin/nodejs                          # node.js
 PATH=/usr/local/Qt-5.4.2/bin/:$PATH                 # Qt (Qt5)
-# And, finally, export! After adding ~/bin & ~/scripts.
+
+# Finally, 'export' PATH; after adding ~/bin & ~/scripts
 export PATH=$PATH:$HOME/bin:$HOME/scripts
 
 #-------------------------------------------------------------
-# Settings
+# Shell (Settings/Installs/Configs/major settings)
 #-------------------------------------------------------------
 
 stty -ixon                                          # ignore suspend (CTRL-s) / resume (CTRL-q)
 set -o noclobber
 set -o vi                                           # use vi to edit cmnd line
 
-export EDITOR=vim
+alias sag='sudo apt-get'
+alias pkgs='sudo dpkg --get-selections'
 
-alias vi='/usr/bin/gvim "+colo sahara"'
-alias difg='gvim -d'
-alias sudop='sudo su postgres'
+alias b='vi $HOME/.bashrc'
+alias v='vi $HOME/.vimrc'
+alias dotfiles='ls -1d .??* | \grep "[^/]$"'
+alias dotdirs='ls -1d .??*/'
+alias thedirs='ls -1d */'
+
+alias ..='cd ..'
+alias cls=clear
+alias clsa='clear; lsa'
+alias rm='rm -i --preserve-root'
+alias cp='cp -i'
+alias mv='mv -i'  # to prevent accidentally clobbering files
+alias which='type -a'
+alias top=atop
+alias j='jobs -l'
+alias du='du -kh' # makes a more readable output
+alias df='df -kTh'
+
+alias rp='echo "USE SINGLE-QUOTE & CTRL-V. ---> perl -ne \"next LINE unless / Load \(|SELECT COUNT/; s/^[\[[0-9;]*[a-zA-Z]//g; s/ Load \([0-9]{1,3}\.[0-9]ms\) /:/;s/ \([0-9]{1,3}\.[0-9]ms\) /:/; print $_ \" FILE | sort"'
+#alias python=python3
+alias python=python2                                # using python2 for Base Extractor
+
+alias dog='pygmentize -g'                           # 'cat' with COLOR !
+alias cnv=dos2unix                                  # USAGE: cnv <file>.  Directing to o/p does not work here; the <file> is changed "in place"
+# An alternative Pager - using Vim
+alias vil='/usr/share/vim/vim74/macros/less.sh'
+# A nice alternative to recursive 'ls'
+#alias trees='tree -Csuh'
+
+# Pretty-print PATH related env. variables
+alias path='echo -e ${PATH//:/\\n}'
+alias libpath='echo -e ${LD_LIBRARY_PATH//:/\\n}'
+psa() {
+  ps aux | grep -i $*
+}
 
 #-------------------------------------------------------------
-# Dirs
+# Dev/Apps related
 #-------------------------------------------------------------
 
 alias cds='cd $HOME/dev_isda/sead'
 export CLOWDER_ROOT=$HOME/dev_isda/sead/clowder
 alias cdc='cd $CLOWDER_ROOT'
 
+alias ctm='cd $CLOWDER_ROOT; ctags -h[".scala"] -R -f ./.git/tags .'
+
+# Strip ESC characters (used for colors), etc., from the Rails log (say):
+alias strp='sed -r "s!\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m!!g"'
+
+alias psql='psql xras xras' # (on localhost)
+alias sudop='sudo su postgres'
+pgd() { # arg_1 --> Source-DB (eg: xras_test_xdcdb); arg_2 --> Source-Schema (eg: xras); arg_3 --> DB-User (eg: postgres)
+  pg_dump -h sybase2.ncsa.uiuc.edu -U ${3} -d ${1} -n ${2} -Fc -f `date +%Y%m%d`.${1}.${2}.${3}.backup --exclude-table-data=action_documents
+}
+# For pgr:  REMEMBER to 1st CREATE an empty Destination-DB, along w/a Schema!
+pgr() {  # arg_1 --> Dest-DB; arg_2 --> Dest-Schema; arg_3 --> DB-User; arg_4 --> input file (eg: 20140624.xras_test_xdcdb.xras.postgres.backup)
+  pg_restore -h localhost -U ${3} -d ${1} -n ${2} ${4} 2>&1 | tee out/${4}.RESTORE_AS.${1}.out
+}
+
+alias pss='psa sbt'
+alias rel='elasticsearch-1.5.1/bin/elasticsearch -Dlog4j.configuration=$HOME/log4j.properties -d 2>&1'
+alias elastic='curl -X GET http://localhost:9200'
+
 #-------------------------------------------------------------
-# Aliases/Fns - Git
+# g\Vim
+#-------------------------------------------------------------
+
+export VIM=/usr/share/vim/vim74
+##export VIMRUNTIME=...
+alias vi='/usr/bin/gvim "+colo sahara"'
+alias maps="grep -A1 map $HOME/.vimrc | sed '/[>my]$/{N;s!\n!!}' | grep map | sed -r 's!^.+\" !  !; s!^  (.*) <--!$(tput setaf 2)  \1  $(tput sgr0)<--!; s!<-- (.*)!<---- $(tput setaf 6) \1$(tput sgr0)!'"
+export EDITOR=vim
+
+#-------------------------------------------------------------
+# diff & Related
+#-------------------------------------------------------------
+
+alias dif='colordiff -bw'
+alias difi='colordiff -bwi'
+alias diff='colordiff'
+didi() {
+  dirdiff $1 $2 &
+}
+alias difs='diff -bWiEZ -w350 --diff-program=colordiff'
+
+komp() {
+  kompare $* 2>/dev/null &
+}
+alias difg='gvim -d'
+
+#-------------------------------------------------------------
+# Git
 #-------------------------------------------------------------
 
 alias gis='git status'                              # 'GI't 'S'tatus
@@ -98,10 +176,6 @@ gigb() {
   /usr/lib/git-core/git-gui blame $* 2>/dev/null &
 }
 
-komp() {
-  kompare $* 2>/dev/null &
-}
-
 ## To override user.name/.email set in .gitconfig
 #export GIT_AUTHOR_NAME='Winston Jansz'
 #export GIT_COMMITTER_NAME='Winston Jansz'
@@ -109,35 +183,8 @@ komp() {
 #export GIT_COMMITTER_EMAIL='jansz@illinois.edu'
 
 #-------------------------------------------------------------
-# Aliases/Fns - Others
+# grep/find
 #-------------------------------------------------------------
-
-alias ..='cd ..'
-
-alias sag='sudo apt-get'
-alias pkgs='sudo dpkg --get-selections'
-
-alias b='vi $HOME/.bashrc'
-alias v='vi $HOME/.vimrc'
-
-#alias python=python3
-alias python=python2                                # using python2 for Base Extractor
-alias cnv=dos2unix                                  # USAGE: cnv <file>.  Directing to o/p does not work here; the <file> is changed "in place"
-alias dog='pygmentize -g'                           # 'cat' with COLOR !
-
-alias rxv='mv /mnt/hgfs/iShared/* .'
-txv() { # arg_1[,..] --> filename[s] (eg: abc pqr xyz.txt)
-  cp -pr $* /mnt/hgfs/iShared/
-}
-
-alias dif='colordiff -bw'
-alias difi='colordiff -bwi'
-alias diff='colordiff'
-didi() {
-  dirdiff $1 $2 &
-}
-
-alias difs='diff -bWiEZ -w350 --diff-program=colordiff'
 
 alias grep='grep --color=auto'
 # Pipe grep's output thru 'less', etc., but STILL preserve search string colorization:
@@ -145,9 +192,6 @@ alias grpa='\grep --color=always'
 grp() {
   grep $* 2>/dev/null
 }
-# Strip ESC characters (used for colors), etc., from the Rails log (say):
-alias strp='sed -r "s!\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m!!g"'
-
 g4b() {
   grep -i $* $HOME/.bashrc
 }
@@ -167,64 +211,12 @@ g4ds() {
   grep -i $* $HOME/.{bash_logout,bashrc,bash_profile,profile,vimrc} $HOME/scripts/{stx,rsun}.sh
 }
 
-alias maps="grep -A1 map $HOME/.vimrc | sed '/[>my]$/{N;s!\n!!}' | grep map | sed -r 's!^.+\" !  !; s!^  (.*) <--!$(tput setaf 2)  \1  $(tput sgr0)<--!; s!<-- (.*)!<---- $(tput setaf 6) \1$(tput sgr0)!'"
-
-alias dotfiles='ls -1d .??* | \grep "[^/]$"'
-alias dotdirs='ls -1d .??*/'
-alias thedirs='ls -1d */'
-
 alias fr='find . -type d \( -name .git -o -name .idea -o -name doc -o -name log -o -name test -o -name tmp -o -name public -o -name script -o -name scripts -o -name target \) -prune -o -name'
 alias frj='find . -type d \( -name javascripts -name .git -o -name doc -o -name log -o -name test -o -name tmp \) -prune -o -name'
 alias rfr='echo "fr \"*\" | grep -v \"\./tags:\" | xargs grep -in --color=always \"WORDS\" 2>/dev/null"'
-alias rp='echo "USE SINGLE-QUOTE & CTRL-V. ---> perl -ne \"next LINE unless / Load \(|SELECT COUNT/; s/^[\[[0-9;]*[a-zA-Z]//g; s/ Load \([0-9]{1,3}\.[0-9]ms\) /:/;s/ \([0-9]{1,3}\.[0-9]ms\) /:/; print $_ \" FILE | sort"'
-
-alias ctm='cdm; ctags -h[".scala"] -R -f ./.git/tags .'
-
-alias cls=clear
-alias clsa='clear; lsa'
-alias which='type -a'
-alias j='jobs -l'
-alias top=atop
-alias du='du -kh' # makes a more readable output
-alias df='df -kTh'
-
-alias rm='rm -i --preserve-root'
-alias cp='cp -i'
-alias mv='mv -i'  # to prevent accidentally clobbering files
-
-# Pretty-print some PATH variables:
-alias path='echo -e ${PATH//:/\\n}'
-alias libpath='echo -e ${LD_LIBRARY_PATH//:/\\n}'
 
 #-------------------------------------------------------------
-# Aliases/Fns - apps
-#-------------------------------------------------------------
-
-psa() {
-  ps aux | grep -i $*
-}
-alias pss='psa sbt'
-alias rel='elasticsearch-1.5.1/bin/elasticsearch -Dlog4j.configuration=$HOME/log4j.properties -d 2>&1'
-alias elastic='curl -X GET http://localhost:9200'
-
-#-------------------------------------------------------------
-# History
-#-------------------------------------------------------------
-
-alias h=history
-alias hl='history | less'
-alias hi='history| sort -k 2.1,3'
-alias hir='history| sort -r -k 2.1,3'
-
-export HISTFILESIZE=50000       # num. lines allowed in hist. file (on disk) at session startup; & stored in hist. file at end of session, for future
-# (use: export HISTFILESIZE=    ; for eternal bash history--an undocumented feature; sets size to "unlimited")
-export HISTSIZE=10000           # num. lines stored in memory (not disk) during curr. session
-export HISTTIMEFORMAT="[%F %T] "
-export HISTFILE=$HOME/.ebh      # change file location because certain bash sessions truncate .bash_history upon close
-#shopt -s histappend            # append curr. session's hist. to hist. file, on closing current session, rather than overwriting
-
-#-------------------------------------------------------------
-# The 'ls' family
+# ls
 #-------------------------------------------------------------
 
 # Add colors for filetype and  human-readable sizes by default on 'ls':
@@ -247,15 +239,9 @@ alias lm='ll |more'             #  Pipe through 'more'
 alias lr='ll -R'                #  Recursive ls.
 alias la='ll -A'                #  Show hidden files, excluding . and ..
 
-# A nice alternative to recursive-'ls':
-#alias trees='tree -Csuh'
-
 #-------------------------------------------------------------
-# Tailoring 'less'
+# less
 #-------------------------------------------------------------
-
-# An alternative Pager - using Vim ! :
-alias vil='/usr/share/vim/vim74/macros/less.sh'
 
 alias l='less -R'
 alias more=l
@@ -275,7 +261,23 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 #-------------------------------------------------------------
-# Printing
+# History
+#-------------------------------------------------------------
+
+alias h=history
+alias hl='history | less'
+alias hi='history| sort -k 2.1,3'
+alias hir='history| sort -r -k 2.1,3'
+
+export HISTFILESIZE=50000       # num. lines allowed in hist. file (on disk) at session startup; & stored in hist. file at end of session, for future
+# (use: export HISTFILESIZE=    ; for eternal bash history--an undocumented feature; sets size to "unlimited")
+export HISTSIZE=10000           # num. lines stored in memory (not disk) during curr. session
+export HISTTIMEFORMAT="[%F %T] "
+export HISTFILE=$HOME/.ebh      # change file location because certain bash sessions truncate .bash_history upon close
+#shopt -s histappend            # append curr. session's hist. to hist. file, on closing current session, rather than overwriting
+
+#-------------------------------------------------------------
+# Print
 #-------------------------------------------------------------
 
 alias ens7pd='enscript --color --mark-wrapped-lines=arrow -GC -DDuplex:true -Eruby -fCourier7 --style=a2ps'
@@ -287,13 +289,46 @@ alias ens9ld='enscript --color --mark-wrapped-lines=arrow -rGC -DDuplex:true -Er
 alias ens9ln='enscript --color --mark-wrapped-lines=arrow -rGC -DDuplex:false -Eruby -fCourier9 --style=a2ps'
 
 #-------------------------------------------------------------
+# VM
+#-------------------------------------------------------------
+
+alias rxv='mv /mnt/hgfs/iShared/* .'
+txv() { # arg_1[,..] --> filename[s] (eg: abc pqr xyz.txt)
+  cp -pr $* /mnt/hgfs/iShared/
+}
+
+#-------------------------------------------------------------
+# Other misc aliases/fns
+#-------------------------------------------------------------
+
+function my_ip() { # Get IP adress on ethernet
+    MY_IP=$(/sbin/ifconfig eth0 | awk '/inet/ { print $2 } ' |
+      sed -e s/addr://)
+    echo ${MY_IP:-"Not connected"}
+}
+
+function ii() { # Get current host, & related, info
+    echo -e "\nYou are logged on ${BRed}$HOST"
+    echo -e "\n${BRed}Additionnal information:$NC " ; uname -a
+    echo -e "\n${BRed}Users logged on:$NC " ; w -hs |
+             cut -d " " -f1 | sort | uniq
+    echo -e "\n${BRed}Current date :$NC " ; date
+    echo -e "\n${BRed}Machine stats :$NC " ; uptime
+    echo -e "\n${BRed}Memory stats :$NC " ; free
+    echo -e "\n${BRed}Diskspace :$NC " ; df -kTh / $HOME
+    echo -e "\n${BRed}Local IP Address :$NC" ; my_ip
+    echo -e "\n${BRed}Open connections :$NC "; netstat -pan --inet;
+    echo
+}
+
+#-------------------------------------------------------------
 # Prompt
 #-------------------------------------------------------------
 
 export PS1='\[\e[1;33m\]\w $ \[\e[m\]'
 
 #-------------------------------------------------------------
-# Titlebar
+# Title bar
 #-------------------------------------------------------------
 
 function git-branch-name() {
@@ -316,26 +351,3 @@ function tb() {
 }
 export PROMPT_COMMAND=tb
 
-#-------------------------------------------------------------
-# Process/system related fns:
-#-------------------------------------------------------------
-
-function my_ip() { # Get IP adress on ethernet.
-    MY_IP=$(/sbin/ifconfig eth0 | awk '/inet/ { print $2 } ' |
-      sed -e s/addr://)
-    echo ${MY_IP:-"Not connected"}
-}
-
-function ii() { # Get current host related info.
-    echo -e "\nYou are logged on ${BRed}$HOST"
-    echo -e "\n${BRed}Additionnal information:$NC " ; uname -a
-    echo -e "\n${BRed}Users logged on:$NC " ; w -hs |
-             cut -d " " -f1 | sort | uniq
-    echo -e "\n${BRed}Current date :$NC " ; date
-    echo -e "\n${BRed}Machine stats :$NC " ; uptime
-    echo -e "\n${BRed}Memory stats :$NC " ; free
-    echo -e "\n${BRed}Diskspace :$NC " ; df -kTh / $HOME
-    echo -e "\n${BRed}Local IP Address :$NC" ; my_ip
-    echo -e "\n${BRed}Open connections :$NC "; netstat -pan --inet;
-    echo
-}
