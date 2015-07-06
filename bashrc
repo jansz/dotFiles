@@ -1,6 +1,6 @@
 
 #-------------------------------------------------------------
-# PATH / Other env variables
+# PATH & other env variables
 #-------------------------------------------------------------
 
 ## rbenv
@@ -31,7 +31,7 @@ PATH=/usr/local/Qt-5.4.2/bin/:$PATH                 # Qt (Qt5)
 export PATH=$PATH:$HOME/bin:$HOME/scripts
 
 #-------------------------------------------------------------
-# Shell (Settings/Installs/Configs/major settings)
+# Shell (Settings/Installs/Configs/other major aliases/fns)
 #-------------------------------------------------------------
 
 stty -ixon                                          # ignore suspend (CTRL-s) / resume (CTRL-q)
@@ -65,14 +65,16 @@ alias python=python2                                # using python2 for Base Ext
 
 alias dog='pygmentize -g'                           # 'cat' with COLOR !
 alias cnv=dos2unix                                  # USAGE: cnv <file>.  Directing to o/p does not work here; the <file> is changed "in place"
+
 # An alternative Pager - using Vim
 alias vil='/usr/share/vim/vim74/macros/less.sh'
-# A nice alternative to recursive 'ls'
+# Nice alternative to recursive 'ls'
 #alias trees='tree -Csuh'
 
 # Pretty-print PATH related env. variables
 alias path='echo -e ${PATH//:/\\n}'
 alias libpath='echo -e ${LD_LIBRARY_PATH//:/\\n}'
+
 psa() {
   ps aux | grep -i $*
 }
@@ -81,15 +83,7 @@ psa() {
 # Dev/Apps related
 #-------------------------------------------------------------
 
-alias cds='cd $HOME/dev_isda/sead'
-export CLOWDER_ROOT=$HOME/dev_isda/sead/clowder
-alias cdc='cd $CLOWDER_ROOT'
-
-alias ctm='cd $CLOWDER_ROOT; ctags -h[".scala"] -R -f ./.git/tags .'
-
-# Strip ESC characters (used for colors), etc., from the Rails log (say):
-alias strp='sed -r "s!\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m!!g"'
-
+# PostgreSQL
 alias psql='psql xras xras' # (on localhost)
 alias sudop='sudo su postgres'
 pgd() { # arg_1 --> Source-DB (eg: xras_test_xdcdb); arg_2 --> Source-Schema (eg: xras); arg_3 --> DB-User (eg: postgres)
@@ -100,7 +94,58 @@ pgr() {  # arg_1 --> Dest-DB; arg_2 --> Dest-Schema; arg_3 --> DB-User; arg_4 --
   pg_restore -h localhost -U ${3} -d ${1} -n ${2} ${4} 2>&1 | tee out/${4}.RESTORE_AS.${1}.out
 }
 
+# Ruby / Rails
+alias rux='rvm use 1.9.3-p545@xras-dev --default'
+
+rgc() {
+  rvm gemset create $1
+}
+alias rin='rvm info'
+alias rgl='rvm gemset list'                     # [there's also 'rvm list']
+alias bli='bundle list'
+alias gl='gem list | less'
+un() { # eg:  un actionpack '<3.2.19'
+  gem uninstall ${1} --version ${2};
+}
+
+alias bi='bundle install'
+alias rake='bundle exec rake'
+
+alias lsg='lsa $HOME/.rvm/gems/ruby-1.9.3-p545'
+alias cdg='cd $HOME/.rvm/gems/ruby-1.9.3-p545'
+alias psr='ps aux | grep rail'
+
+# in development_local:
+alias rrl='RAILS_ENV=development_local rake routes'
+alias rcl='rails console development_local -s'
+alias rdl='rails db development_local'               # (psql)
+# -- logs
+alias rlz='truncate -s0 $XRAS_ADMIN_ROOT/log/development_local.log'
+alias rlc='wc -l $XRAS_ADMIN_ROOT/log/development_local.log'
+alias rlt="grc tail -f $XRAS_ADMIN_ROOT/log/development_local.log | perl -pi -e 's/(Processing by [a-zA-Z0-9]+sController#[a-z0-9_]+)/\007\033[31;1m\1 \033[0m/'"
+alias rlg="grep -n ' Load (' $XRAS_ADMIN_ROOT/log/development_local.log |sort -b -k2"
+# Strip ESC characters (used for colors), etc., from the Rails log (say):
+alias strp='sed -r "s!\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m!!g"'
+
+# for XRAS Admin:
+alias rsx='rails server -e development_local'
+alias rsxd='rails server -e development_local -d'
+# for XRAS Rules (Engine) Service:
+alias rsr='RAILS_ENV=development rails server -e development -p3333'
+alias rsrd='RAILS_ENV=development rails server -e development -p3333 -d'
+# for XRAS Accounting (API) Service:
+alias rsa='RAILS_ENV=testing rails server -e testing -p3330'
+alias rsad='RAILS_ENV=testing rails server -e testing -p3330 -d'
+
+# Clowder
+alias cds='cd $HOME/dev_isda/sead'
+export CLOWDER_ROOT=$HOME/dev_isda/sead/clowder
+alias cdc='cd $CLOWDER_ROOT'
+
+alias ctm='cd $CLOWDER_ROOT; ctags -h[".scala"] -R -f ./.git/tags .'
+
 alias pss='psa sbt'
+
 alias rel='elasticsearch-1.5.1/bin/elasticsearch -Dlog4j.configuration=$HOME/log4j.properties -d 2>&1'
 alias elastic='curl -X GET http://localhost:9200'
 
@@ -213,7 +258,8 @@ g4ds() {
 
 alias fr='find . -type d \( -name .git -o -name .idea -o -name doc -o -name log -o -name test -o -name tmp -o -name public -o -name script -o -name scripts -o -name target \) -prune -o -name'
 alias frj='find . -type d \( -name javascripts -name .git -o -name doc -o -name log -o -name test -o -name tmp \) -prune -o -name'
-alias rfr='echo "fr \"*\" | grep -v \"\./tags:\" | xargs grep -in --color=always \"WORDS\" 2>/dev/null"'
+alias rfr='echo "fr \"*\" | grep -v \"\./tags:\" | xargs grep -in --color=always \"STRS\" 2>/dev/null"'
+alias rfr2='echo "fr \"*\" | grep -v \"\./tags:\" | xargs grep -v xras_summary 2>/dev/null | grep -in --color=always \"STRS\""'
 
 #-------------------------------------------------------------
 # ls
