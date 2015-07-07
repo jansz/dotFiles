@@ -1,9 +1,9 @@
-set diffprogram gvimdiff
+set diffprogram kompare
 set showprogram gvim
 set rcsflag {}
 set diffiflag {}
 set diffwflag -w
-set diffbflag {}
+set diffbflag -b
 set diffBflag -B
 set diffdflag {}
 set ctxlines 3
@@ -11,8 +11,28 @@ set showsame 0
 set underlinetabs 0
 set redisp_immed 1
 set diffnewfirst 0
-set nukefiles {.git/* log/* *.o *~ *.orig *.old *.a *.link *.save .depend .*.flags SCCS}
+set nukefiles { .depend
+                .git*
+                .git/*
+                .hg*
+                .hg/*
+                .idea/*
+                .*.flags
+                *.a
+                *.link
+                *.o
+                *.old
+                *.orig
+                *.save
+                *~
+                fl
+                log/*
+                logs/*
+                project/*
+                SCCS
+                target/*
+                app/target/* }
 set filelistfont {Helvetica -10}
 set textfont {Courier -10}
 set nxdirmode 1
-set docvsignore 0
+set docvsignore 1

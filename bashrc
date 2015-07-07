@@ -213,10 +213,11 @@ alias gtu.sh='git difftool 2>/dev/null'
 alias gts.h='git difftool --cached 2>/dev/null'
 alias gth.p='git difftool HEAD^ HEAD 2>/dev/null'
 
+# Clowder:
 gic() { # arg_1 --> name[.git] (eg: clowder.git)
   git clone https://jansz@opensource.ncsa.illinois.edu/stash/scm/cats/${1}
 }
-
+alias gpfs='git pull origin/feature/spaces'
 gigb() {
   /usr/lib/git-core/git-gui blame $* 2>/dev/null &
 }
