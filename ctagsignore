@@ -1,0 +1,13 @@
+.git*
+*.conf
+*.log
+*.md
+*.txt
+*.xml
+.git
+.idea
+doc
+log
+logs
+public
+target
